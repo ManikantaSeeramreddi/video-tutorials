@@ -5,12 +5,12 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 
 export function EditVideo() {
   const [videos, setVideos] = useState(null);
-  const params = useParams();
+  const { id } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
     axios
-      .get(`http://127.0.0.1:5000/videos/${params.id}`)
+      .get(`http://127.0.0.1:5000/videos/${id}`)
       .then((res) => {
         let v = res.data;
         if (Array.isArray(v)) v = v[0];
@@ -25,7 +25,7 @@ export function EditVideo() {
         });
       })
       .catch((err) => console.error(err));
-  }, []);
+  }, [id]);
 
   const formik = useFormik({
     initialValues: videos || {
@@ -39,7 +39,7 @@ export function EditVideo() {
     enableReinitialize: true,
     onSubmit: (values) => {
       axios
-        .put(`http://127.0.0.1:5000/updatevideo/${params.id}`, values)
+        .put(`http://127.0.0.1:5000/updatevideo/${id}`, values)
         .then(() => {
           alert("Video Updated Successfully!");
           navigate("/admin-home");

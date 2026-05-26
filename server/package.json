@@ -1,0 +1,18 @@
+{
+  "name": "video-api-server",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node video-api.js",
+    "dev": "nodemon video-api.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.4",
+    "mongodb": "^5.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}

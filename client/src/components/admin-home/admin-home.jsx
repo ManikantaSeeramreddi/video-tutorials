@@ -101,6 +101,7 @@ export function AdminHome() {
                       }}
                     >
                       <iframe
+                        title={`Preview of ${video.Title}`}
                         src={video.Url}
                         style={{
                           width: "100%",

@@ -1,150 +1,232 @@
-var express=require("express");
-var cors=require("cors");
-var mongoclient=require("mongodb").MongoClient;
-var constr="mongodb://localhost:27017";
-var app=express();
+﻿require('dotenv').config();
+const express = require('express');
+const cors = require('cors');
+const { MongoClient } = require('mongodb');
+
+const app = express();
+const port = process.env.PORT || 5000;
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+const dbName = process.env.DB_NAME || 'reactdb';
+
 app.use(cors());
-app.use(express.urlencoded({
-extended:true
-}));
 app.use(express.json());
-app.get("/admin",(req,res)=>{
-mongoclient.connect(constr).then((clientObj)=>{
-var database=clientObj.db("reactdb");
-database.collection("admin").find({}).toArray().then(documents=>{
-res.send(documents);
-res.end();
-})
-})
+app.use(express.urlencoded({ extended: false }));
+
+const client = new MongoClient(mongoUri);
+let database;
+
+async function connectDatabase() {
+  if (!database) {
+    await client.connect();
+    database = client.db(dbName);
+  }
+  return database;
+}
+
+async function getCollection(name) {
+  const db = await connectDatabase();
+  return db.collection(name);
+}
+
+function sendError(res, error) {
+  console.error(error);
+  res.status(500).json({ error: error.message || 'Internal server error' });
+}
+
+app.get('/', (req, res) => {
+  res.json({ status: 'ok', message: 'Video API is running' });
 });
-app.get("/categories",(req,res)=>{
-mongoclient.connect(constr).then((clientObj)=>{
-var database=clientObj.db("reactdb");
-database.collection("categories").find({}).toArray().then(documents=>{
-res.send(documents);
-res.end();
-})
-})
+
+app.get('/admin', async (req, res) => {
+  try {
+    const collection = await getCollection('admin');
+    const documents = await collection.find({}).toArray();
+    res.json(documents);
+  } catch (error) {
+    sendError(res, error);
+  }
 });
-app.get("/videos",(req,res)=>{
-mongoclient.connect(constr).then((clientObj)=>{
-var database=clientObj.db("reactdb");
-database.collection("videos").find({}).toArray().then(documents=>{
-res.send(documents);
-res.end();
-})
-})
+
+app.get('/categories', async (req, res) => {
+  try {
+    const collection = await getCollection('categories');
+    const documents = await collection.find({}).toArray();
+    res.json(documents);
+  } catch (error) {
+    sendError(res, error);
+  }
 });
-app.get("/users",(req,res)=>{
-mongoclient.connect(constr).then((clientObj)=>{
-var database=clientObj.db("reactdb");
-database.collection("users").find({}).toArray().then(documents=>{
-res.send(documents);
-res.end();
-})
-})
+
+app.get('/videos', async (req, res) => {
+  try {
+    const collection = await getCollection('videos');
+    const documents = await collection.find({}).toArray();
+    res.json(documents);
+  } catch (error) {
+    sendError(res, error);
+  }
 });
-app.get("/videos/:id",(req,res)=>{
-var id=parseInt(req.params.id)
-mongoclient.connect(constr).then((clientObj)=>{
-var database=clientObj.db("reactdb");
-database.collection("videos").find({VideoId:id}).toArray().then(documents=>{
-res.send(documents);
-res.end();
-})
-})
+
+app.get('/users', async (req, res) => {
+  try {
+    const collection = await getCollection('users');
+    const documents = await collection.find({}).toArray();
+    res.json(documents);
+  } catch (error) {
+    sendError(res, error);
+  }
 });
-app.get("/getvideos/:catid",(req,res)=>{
-var id=parseInt(req.params.catid)
-mongoclient.connect(constr).then((clientObj)=>{
-var database=clientObj.db("reactdb");
-database.collection("videos").find({CategoryId:id}).toArray().then(documents=>{
-res.send(documents);
-res.end();
-})
-})
+
+app.get('/videos/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ error: 'Invalid video id' });
+  }
+
+  try {
+    const collection = await getCollection('videos');
+    const video = await collection.findOne({ VideoId: id });
+    if (!video) {
+      return res.status(404).json({ error: 'Video not found' });
+    }
+    res.json(video);
+  } catch (error) {
+    sendError(res, error);
+  }
 });
-app.post("/addcategory",(req,res)=>{
-var category={
-CategoryId:parseInt(req.body.CategoryId),
-CategoryName:req.body.CategoryName
-};
-mongoclient.connect(constr).then((clientObj)=>{
-var database=clientObj.db("reactdb");
-database.collection("categories").insertOne(category).then(()=>{
-console.log('Category Inserted');
-res.end();
-})
-})
+
+app.get('/getvideos/:catid', async (req, res) => {
+  const id = Number(req.params.catid);
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ error: 'Invalid category id' });
+  }
+
+  try {
+    const collection = await getCollection('videos');
+    const documents = await collection.find({ CategoryId: id }).toArray();
+    res.json(documents);
+  } catch (error) {
+    sendError(res, error);
+  }
 });
-app.post("/addvideo", (req, res) => {
-  const video = {
-    VideoId: parseInt(req.body.VideoId),
-    Title: req.body.Title,
-    Url: req.body.Url,
-    Likes: parseInt(req.body.Likes),
-    Dislikes: parseInt(req.body.Dislikes),  // ✅ note spelling match
-    Views: parseInt(req.body.Views),
-    CategoryId: parseInt(req.body.CategoryId),
+
+app.post('/addcategory', async (req, res) => {
+  const category = {
+    CategoryId: Number(req.body.CategoryId),
+    CategoryName: req.body.CategoryName,
   };
 
-  mongoclient.connect(constr).then((clientObj) => {
-    var database = clientObj.db("reactdb");
-    database.collection("videos").insertOne(video)
-      .then(() => {
-        console.log("Video Inserted");
-        res.send("Video added");
-        res.end();
-      })
-      .catch(err => res.status(500).send(err));
-  });
+  if (!category.CategoryName) {
+    return res.status(400).json({ error: 'CategoryName is required' });
+  }
+
+  try {
+    const collection = await getCollection('categories');
+    const result = await collection.insertOne(category);
+    res.status(201).json({ insertedId: result.insertedId });
+  } catch (error) {
+    sendError(res, error);
+  }
 });
 
+app.post('/addvideo', async (req, res) => {
+  const video = {
+    VideoId: Number(req.body.VideoId),
+    Title: req.body.Title,
+    Url: req.body.Url,
+    Likes: Number(req.body.Likes) || 0,
+    Dislikes: Number(req.body.Dislikes) || 0,
+    Views: Number(req.body.Views) || 0,
+    CategoryId: Number(req.body.CategoryId),
+  };
 
-app.post("/registeruser",(req,res)=>{
-var user={
-UserId:req.body.UserId,
-UserName:req.body.UserName,
-Password:req.body.Password,
-Email:req.body.Email,
-Mobile:req.body.Mobile
-};
-mongoclient.connect(constr).then(clientObj=>{
-var database=clientObj.db("reactdb");
-database.collection("users").insertOne(user).then(()=>{
-console.log('User Inserted');
-res.end();
-})
-})
+  if (!video.Title || !video.Url || Number.isNaN(video.VideoId)) {
+    return res.status(400).json({ error: 'VideoId, Title, and Url are required' });
+  }
+
+  try {
+    const collection = await getCollection('videos');
+    const result = await collection.insertOne(video);
+    res.status(201).json({ message: 'Video added', insertedId: result.insertedId });
+  } catch (error) {
+    sendError(res, error);
+  }
 });
-app.put("/updatevideo/:id",(req,res)=>{
-var id=parseInt(req.params.id);
-var video={
-VideoId:parseInt(req.body.VideoId),
-Title:req.body.Title,
-Url:req.body.Url,
-Likes:parseInt(req.body.Likes),
-DisLikes:parseInt(req.body.Dislikes),
-Views:parseInt(req.body.Views),
-CategoryId:parseInt(req.body.CategoryId)
-};
-mongoclient.connect(constr).then(clientObj=>{
-var database=clientObj.db("reactdb");
-database.collection("videos").updateOne({VideoId:id},{$set:video}).then(()=>{
-console.log('User Inserted');
-res.end();
-})
-})
+
+app.post('/registeruser', async (req, res) => {
+  const user = {
+    UserId: req.body.UserId,
+    UserName: req.body.UserName,
+    Password: req.body.Password,
+    Email: req.body.Email,
+    Mobile: req.body.Mobile,
+  };
+
+  if (!user.UserId || !user.UserName || !user.Password) {
+    return res.status(400).json({ error: 'UserId, UserName, and Password are required' });
+  }
+
+  try {
+    const collection = await getCollection('users');
+    const result = await collection.insertOne(user);
+    res.status(201).json({ message: 'User registered', insertedId: result.insertedId });
+  } catch (error) {
+    sendError(res, error);
+  }
 });
-app.delete("/deletevideo/:id",(req,res)=>{
-var id=parseInt(req.params.id);
-mongoclient.connect(constr).then(clientObj=>{
-var database=clientObj.db("reactdb");
-database.collection("videos").deleteOne({VideoId:id}).then(()=>{
-console.log('Video Deleted');
-res.end();
-})
-})
+
+app.put('/updatevideo/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ error: 'Invalid video id' });
+  }
+
+  const video = {
+    VideoId: Number(req.body.VideoId),
+    Title: req.body.Title,
+    Url: req.body.Url,
+    Likes: Number(req.body.Likes) || 0,
+    Dislikes: Number(req.body.Dislikes) || 0,
+    Views: Number(req.body.Views) || 0,
+    CategoryId: Number(req.body.CategoryId),
+  };
+
+  try {
+    const collection = await getCollection('videos');
+    const result = await collection.updateOne({ VideoId: id }, { $set: video });
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ error: 'Video not found' });
+    }
+    res.json({ message: 'Video updated' });
+  } catch (error) {
+    sendError(res, error);
+  }
 });
-app.listen(5000);
-console.log("server started:http://127.0.0.1:5000");
+
+app.delete('/deletevideo/:id', async (req, res) => {
+  const id = Number(req.params.id);
+  if (Number.isNaN(id)) {
+    return res.status(400).json({ error: 'Invalid video id' });
+  }
+
+  try {
+    const collection = await getCollection('videos');
+    const result = await collection.deleteOne({ VideoId: id });
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ error: 'Video not found' });
+    }
+    res.json({ message: 'Video deleted' });
+  } catch (error) {
+    sendError(res, error);
+  }
+});
+
+app.listen(port, () => {
+  console.log(`server started: http://127.0.0.1:${port}`);
+});
+
+process.on('SIGINT', async () => {
+  console.log('Closing database connection');
+  await client.close();
+  process.exit(0);
+});
