@@ -7,33 +7,69 @@ export function VideoHome() {
   const [videos, setVideos] = useState([]);
   const [filteredVideos, setFilteredVideos] = useState([]);
   const [categories, setCategories] = useState([]);
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [activeCategory, setActiveCategory] = useState(0);
 
   useEffect(() => {
-    axios
-      .get("http://127.0.0.1:5000/videos")
-      .then((res) => {
-        setVideos(res.data);
-        setFilteredVideos(res.data);
+    async function loadData() {
+      try {
+        const [videosRes, categoriesRes] = await Promise.all([
+          axios.get("http://127.0.0.1:5000/videos"),
+          axios.get("http://127.0.0.1:5000/categories"),
+        ]);
 
-        // Extract unique categories
-        const uniqueCategories = Array.from(
-          new Set(res.data.map((v) => v.Category))
-        ).sort();
+        const videoData = Array.isArray(videosRes.data) ? videosRes.data : [];
+        const categoryData = Array.isArray(categoriesRes.data)
+          ? categoriesRes.data
+          : [];
 
-        setCategories(["All", ...uniqueCategories]);
-      })
-      .catch((err) => console.error(err));
+        setVideos(videoData);
+        setFilteredVideos(videoData);
+
+        const categoryList = [
+          { CategoryId: 0, CategoryName: "All" },
+          ...categoryData.map((cat) => ({
+            CategoryId: Number(cat.CategoryId),
+            CategoryName: cat.CategoryName || "Unknown",
+          })),
+        ];
+
+        const videoCategoryIds = Array.from(
+          new Set(videoData.map((video) => Number(video.CategoryId)))
+        )
+          .filter((id) => id > 0)
+          .map((id) => ({ CategoryId: id, CategoryName: `Category ${id}` }));
+
+        const mergedCategories = [
+          categoryList[0],
+          ...categoryList.slice(1),
+          ...videoCategoryIds.filter(
+            (videoCat) => !categoryList.some((cat) => cat.CategoryId === videoCat.CategoryId)
+          ),
+        ];
+
+        setCategories(mergedCategories);
+      } catch (err) {
+        console.error("Failed to load videos or categories:", err);
+      }
+    }
+
+    loadData();
   }, []);
 
-  const handleCategoryClick = (category) => {
-    setActiveCategory(category);
-    if (category === "All") {
+  const handleCategoryClick = (categoryId) => {
+    setActiveCategory(categoryId);
+    if (categoryId === 0) {
       setFilteredVideos(videos);
     } else {
-      setFilteredVideos(videos.filter((v) => v.Category === category));
+      setFilteredVideos(
+        videos.filter((video) => Number(video.CategoryId) === categoryId)
+      );
     }
   };
+
+  const activeCategoryName =
+    categories.find((cat) => cat.CategoryId === activeCategory)?.CategoryName ||
+    "All";
 
   return (
     <div className="container-fluid my-4">
@@ -44,17 +80,17 @@ export function VideoHome() {
         <div className="sidebar d-none d-md-block">
           <h5 className="mb-3">Categories</h5>
           <div className="d-flex flex-column">
-            {categories.map((cat, idx) => (
+            {categories.map((cat) => (
               <button
-                key={idx}
+                key={cat.CategoryId}
                 className={`btn text-start mb-2 ${
-                  activeCategory === cat
+                  activeCategory === cat.CategoryId
                     ? "active-category"
                     : "btn-outline-secondary"
                 }`}
-                onClick={() => handleCategoryClick(cat)}
+                onClick={() => handleCategoryClick(cat.CategoryId)}
               >
-                {cat}
+                {cat.CategoryName}
               </button>
             ))}
           </div>
@@ -63,17 +99,17 @@ export function VideoHome() {
         {/* Dropdown - Mobile */}
         <div className="d-block d-md-none mb-3">
           <DropdownButton
-            title={activeCategory}
+            title={activeCategoryName}
             variant="outline-primary"
             className="w-100"
           >
-            {categories.map((cat, idx) => (
+            {categories.map((cat) => (
               <Dropdown.Item
-                key={idx}
-                active={activeCategory === cat}
-                onClick={() => handleCategoryClick(cat)}
+                key={cat.CategoryId}
+                active={activeCategory === cat.CategoryId}
+                onClick={() => handleCategoryClick(cat.CategoryId)}
               >
-                {cat}
+                {cat.CategoryName}
               </Dropdown.Item>
             ))}
           </DropdownButton>
@@ -102,6 +138,12 @@ export function VideoHome() {
                     >
                       {video.Title}
                     </h6>
+                    <p className="text-muted mb-0">
+                      Category:{" "}
+                      {categories.find((cat) =>
+                        cat.CategoryId === Number(video.CategoryId)
+                      )?.CategoryName || "Unknown"}
+                    </p>
                     <p className="text-muted mb-0">
                       Views: {video.Views || 0}
                     </p>

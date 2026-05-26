@@ -11,35 +11,50 @@ export function Register() {
     Mobile: "",
   });
   const [userError, setUserError] = useState("");
-  const navigate = useNavigate("");
+  const [formError, setFormError] = useState("");
+  const navigate = useNavigate();
 
   // Handlers
   function handleIdChange(e) {
-    setUser({ ...user, UserId: e.target.value });
+    const value = e.target.value;
+    setUser({ ...user, UserId: value });
 
-    axios({
-      method: "get",
-      url: "http://127.0.0.1:5000/users",
-    }).then((response) => {
-      const exists = response.data.some((u) => u.UserId === e.target.value);
-      setUserError(exists ? "UserId already taken. Try another." : "UserId available.");
-    });
+    axios
+      .get("http://127.0.0.1:5000/users")
+      .then((response) => {
+        const exists = response.data.some((u) => String(u.UserId) === value);
+        setUserError(exists ? "UserId already taken. Try another." : "UserId available.");
+      })
+      .catch((err) => {
+        console.error("User check failed", err);
+        setUserError("Unable to verify UserId at this time.");
+      });
   }
 
   function handleChange(e, field) {
     setUser({ ...user, [field]: e.target.value });
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    axios({
-      method: "post",
-      url: "http://127.0.0.1:5000/registeruser",
-      data: user,
-    }).then(() => {
+    setFormError("");
+
+    if (!user.UserId || !user.UserName || !user.Password) {
+      setFormError("UserId, UserName, and Password are required.");
+      return;
+    }
+
+    try {
+      await axios.post("http://127.0.0.1:5000/registeruser", user, {
+        headers: { "Content-Type": "application/json" },
+      });
       alert("Registered Successfully!");
       navigate("/login");
-    });
+    } catch (err) {
+      console.error("Registration failed", err);
+      const message = err.response?.data?.error || err.response?.data?.message || "Registration failed.";
+      setFormError(message);
+    }
   }
 
   return (
@@ -93,6 +108,7 @@ export function Register() {
             id="userid"
             type="text"
             className="form-control"
+            value={user.UserId}
             onChange={handleIdChange}
             placeholder="Enter your UserId"
             style={{ borderRadius: "12px", padding: "14px" }}
@@ -107,6 +123,7 @@ export function Register() {
             id="username"
             type="text"
             className="form-control"
+            value={user.UserName}
             onChange={(e) => handleChange(e, "UserName")}
             placeholder="Enter your UserName"
             style={{ borderRadius: "12px", padding: "14px" }}
@@ -120,6 +137,7 @@ export function Register() {
             id="password"
             type="password"
             className="form-control"
+            value={user.Password}
             onChange={(e) => handleChange(e, "Password")}
             placeholder="Enter your Password"
             style={{ borderRadius: "12px", padding: "14px" }}
@@ -133,6 +151,7 @@ export function Register() {
             id="email"
             type="email"
             className="form-control"
+            value={user.Email}
             onChange={(e) => handleChange(e, "Email")}
             placeholder="Enter your Email"
             style={{ borderRadius: "12px", padding: "14px" }}
@@ -146,6 +165,7 @@ export function Register() {
             id="mobile"
             type="text"
             className="form-control"
+            value={user.Mobile}
             onChange={(e) => handleChange(e, "Mobile")}
             placeholder="Enter your Mobile Number"
             style={{ borderRadius: "12px", padding: "14px" }}
@@ -165,6 +185,11 @@ export function Register() {
         >
           Register
         </button>
+        {formError && (
+          <div className="alert alert-danger mt-3" role="alert">
+            {formError}
+          </div>
+        )}
 
         {/* Login Link */}
         <div className="text-center">

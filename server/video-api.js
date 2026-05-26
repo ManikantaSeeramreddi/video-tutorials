@@ -154,6 +154,8 @@ app.post('/addvideo', async (req, res) => {
 });
 
 app.post('/registeruser', async (req, res) => {
+  console.log('REGISTER BODY:', req.body);
+
   const user = {
     UserId: req.body.UserId,
     UserName: req.body.UserName,
