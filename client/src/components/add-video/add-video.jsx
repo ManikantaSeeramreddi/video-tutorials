@@ -17,6 +17,7 @@ export function AddVideo() {
       Likes: 0,
       Dislikes: 0,
       Views: 0,
+      CategoryId: 0,
     },
     onSubmit: (values) => {
       API.post("/addvideo", values)
@@ -28,8 +29,8 @@ export function AddVideo() {
   return (
     <div
       style={{
-        width: "100vw",
-        height: "100vh",
+        width: "100%",
+        minHeight: "100vh",
         backgroundImage:
           "url('https://images.unsplash.com/photo-1524253482453-3fed8d2fe12b')",
         backgroundSize: "cover",
@@ -37,14 +38,16 @@ export function AddVideo() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
+        padding: "16px",
       }}
     >
       {/* CLEAN GLASS CARD */}
       <form
         onSubmit={formik.handleSubmit}
         style={{
-          width: "600px",
-          padding: "30px",
+          width: "100%",
+          maxWidth: "680px",
+          padding: "22px",
           borderRadius: "20px",
           backdropFilter: "blur(12px)",
           background: "rgba(255,255,255,0.12)",
@@ -73,6 +76,7 @@ export function AddVideo() {
           ["Likes", "Likes", "number"],
           ["Dislikes", "Dislikes", "number"],
           ["Views", "Views", "number"],
+          ["Category ID", "CategoryId", "number"],
         ].map(([label, name, type]) => (
           <div className="mb-3" key={name}>
             <label className="form-label" style={{ fontWeight: "bold" }}>

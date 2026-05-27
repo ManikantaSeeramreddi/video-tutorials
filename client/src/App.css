@@ -1,38 +1,50 @@
-.App {
-  text-align: center;
+/* App-wide layout + responsive defaults */
+
+:root {
+  --app-bg: #0b1220;
+  --app-surface: rgba(255, 255, 255, 0.06);
+  --app-border: rgba(255, 255, 255, 0.12);
+  --app-text: #e8eefc;
+  --app-muted: rgba(232, 238, 252, 0.72);
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
+.app-shell {
   min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+  background: radial-gradient(1200px 800px at 10% 0%, rgba(91, 108, 255, 0.15), transparent 50%),
+    radial-gradient(900px 700px at 90% 10%, rgba(255, 120, 90, 0.12), transparent 55%),
+    var(--app-bg);
+  color: var(--app-text);
 }
 
-.App-link {
-  color: #61dafb;
+.app-main {
+  min-height: calc(100vh - 56px);
+  padding: 16px;
+  padding-bottom: 32px;
+  overflow-x: hidden;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+@media (min-width: 768px) {
+  .app-main {
+    padding: 24px;
   }
-  to {
-    transform: rotate(360deg);
-  }
+}
+
+/* Better tap targets on mobile */
+button,
+.btn {
+  min-height: 40px;
+}
+
+/* Prevent iframe overflow on small screens */
+iframe {
+  max-width: 100%;
+}
+
+/* Smoother scrolling + iOS momentum */
+html {
+  scroll-behavior: smooth;
+}
+body {
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }

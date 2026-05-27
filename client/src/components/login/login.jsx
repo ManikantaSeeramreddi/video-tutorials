@@ -1,11 +1,14 @@
 import API from "../../api";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 export function Login() {
   const [user, setUser] = useState({ UserId: "", Password: "" });
   const [Error, setError] = useState("");
   const navigate = useNavigate("");
+  const { loginUser } = useContext(AuthContext);
 
   function handleIdChange(e) {
     setUser({ UserId: e.target.value, Password: user.Password });
@@ -22,6 +25,7 @@ export function Login() {
       for (var vuser of response.data) {
         if (vuser.UserId === user.UserId && vuser.Password === user.Password) {
           found = true;
+          loginUser(vuser.UserId);
           navigate("/videos");
           break;
         }
@@ -33,7 +37,7 @@ export function Login() {
   return (
     <div
       style={{
-        height: "100vh",
+        minHeight: "100vh",
         width: "100%",
         position: "relative",
         display: "flex",
@@ -63,13 +67,15 @@ export function Login() {
           zIndex: 2,
           display: "flex",
           flexDirection: "column",
-          width: "500px", // Bigger box
-          padding: "40px",
-          gap: "25px",
+          width: "100%",
+          maxWidth: "520px",
+          padding: "24px",
+          gap: "18px",
           color: "white",
           background: "rgba(0,0,0,0.5)", // semi-transparent background
           borderRadius: "20px",
           animation: "fadeSlide 1s ease",
+          margin: "16px",
         }}
       >
         <h2 className="text-center mb-3 fw-bold">User Login</h2>
@@ -109,7 +115,7 @@ export function Login() {
           className="btn btn-primary w-100"
           style={{
             borderRadius: "10px",
-            padding: "12px",
+            padding: "12px 14px",
             background:
               "linear-gradient(135deg, #4e8cff, #7a5cff, #b84fff)",
             border: "none",

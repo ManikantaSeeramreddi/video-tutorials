@@ -4,7 +4,7 @@ export function Unregister() {
   return (
     <div
       style={{
-        height: "100vh",
+        minHeight: "100vh",
         width: "100%",
         display: "flex",
         justifyContent: "center",
@@ -31,12 +31,14 @@ export function Unregister() {
         style={{
           zIndex: 2,
           background: "rgba(0,0,0,0.5)",
-          padding: "40px",
+          padding: "24px",
           borderRadius: "20px",
           textAlign: "center",
           color: "white",
-          width: "450px",
+          width: "100%",
+          maxWidth: "520px",
           animation: "fadeSlide 1s ease",
+          margin: "16px",
         }}
       >
         <h2 className="mb-3 fw-bold">Account Not Found</h2>

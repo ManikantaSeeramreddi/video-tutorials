@@ -33,14 +33,14 @@ export function Maincomponent() {
             <style>
                 {`
                 .hero-container {
-                    height: 100vh;
+                    min-height: 100vh;
                     width: 100%;
                     background:
                         linear-gradient(rgba(0,0,0,0.65), rgba(0,0,0,0.65)),
                         url("https://images.unsplash.com/photo-1519389950473-47ba0277781c")
                         center/cover no-repeat;
                     color: white;
-                    padding: 20px;
+                    padding: 24px 16px;
                     display: flex;
                     flex-direction: column;
                     justify-content: center;
@@ -60,7 +60,7 @@ export function Maincomponent() {
                 }
 
                 .hero-input {
-                    max-width: 430px;
+                    max-width: 520px;
                 }
 
                 .animate-fade {
@@ -84,7 +84,7 @@ export function Maincomponent() {
                     }
 
                     .hero-input {
-                        width: 90%;
+                        width: 100%;
                     }
                 }
                 `}
@@ -103,7 +103,7 @@ export function Maincomponent() {
                         value={email}
                     />
                     <button
-                        className="btn btn-danger btn-lg"
+                        className="btn btn-danger"
                         onClick={Getstarted}
                     >
                         Get started <span className="bi bi-chevron-right"></span>

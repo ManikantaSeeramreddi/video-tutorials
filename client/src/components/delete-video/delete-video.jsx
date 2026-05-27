@@ -7,11 +7,11 @@ import { Link,  useNavigate, useParams } from "react-router-dom";
 export function DeleteVideo(){
     const { id } = useParams();
     const navigate=useNavigate();
-    const[videos,setVideos]=useState([{VideoId:0,Title:'',Url:'',Likes:'0',Dislikes:'0',Views:'0',CategoryId:'0'}]);
+    const [video, setVideo] = useState(null);
     useEffect(()=>{
         API.get(`/videos/${id}`)
         .then((response)=>{
-            setVideos(response.data)
+            setVideo(response.data)
         })
     },[id]);
     async function handleDeleteClick(){
@@ -20,12 +20,48 @@ export function DeleteVideo(){
         navigate('/admin-home')
     }
     return(
-        <div>
-            <h2>Are you sure you want to delete?</h2>
-            <iframe title={`Preview of ${videos[0].Title}`} src={videos[0].Url} width={400} height={400}></iframe>
-            <p>
-            <button className="btn btn-success me-2" onClick={handleDeleteClick}>Yes</button><Link to='/admin-home' className="btn btn-warning" >Cancel</Link>
-            </p>
+        <div className="container-fluid py-3 py-md-4">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-2 mb-3">
+              <div>
+                <h2 className="mb-1">Delete Video</h2>
+                <div className="text-muted">This action can’t be undone.</div>
+              </div>
+              <Link to="/admin-home" className="btn btn-outline-light">← Back</Link>
+            </div>
+
+            <div className="card border-0 shadow-sm" style={{ background: "rgba(255,255,255,0.96)", borderRadius: 16 }}>
+              <div className="card-body p-3 p-md-4">
+                {!video ? (
+                  <div className="d-flex justify-content-center py-4">
+                    <div className="text-center">
+                      <div className="spinner-border text-primary" role="status" />
+                      <div className="mt-3 text-muted">Loading video…</div>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <h5 className="mb-3">Are you sure you want to delete “{video.Title}”?</h5>
+                    <div className="ratio ratio-16x9 rounded-4 overflow-hidden bg-dark mb-3">
+                      <iframe
+                        title={`Preview of ${video.Title}`}
+                        src={video.Url}
+                        style={{ border: "none" }}
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+
+                    <div className="d-flex flex-column flex-sm-row gap-2">
+                      <button className="btn btn-danger" onClick={handleDeleteClick}>
+                        Yes, delete
+                      </button>
+                      <Link to='/admin-home' className="btn btn-outline-secondary" >
+                        Cancel
+                      </Link>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
         </div>
     )
 }

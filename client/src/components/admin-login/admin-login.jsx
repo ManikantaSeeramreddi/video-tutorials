@@ -1,11 +1,14 @@
 import API from "../../api";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext";
 
 export function AdminLogin() {
   const [user, setUser] = useState({ UserId: "", Password: "" });
   const [Error, setError] = useState("");
   const navigate = useNavigate();
+  const { loginAdmin } = useContext(AuthContext);
 
   // Handlers
   function handleIdChange(e) {
@@ -24,6 +27,7 @@ export function AdminLogin() {
           vuser.UserId === user.UserId && vuser.Password === user.Password
       );
       if (found) {
+        loginAdmin(user.UserId);
         navigate("/admin-home");
       } else {
         setError("Invalid Credentials..!");
@@ -34,7 +38,7 @@ export function AdminLogin() {
   return (
     <div
       style={{
-        height: "100vh",
+        minHeight: "100vh",
         width: "100%",
         position: "relative",
         display: "flex",
@@ -64,13 +68,15 @@ export function AdminLogin() {
           zIndex: 2,
           display: "flex",
           flexDirection: "column",
-          width: "500px",
-          padding: "40px",
+          width: "100%",
+          maxWidth: "520px",
+          padding: "24px",
           gap: "20px",
           color: "white",
           background: "rgba(0,0,0,0.5)",
           borderRadius: "25px",
           animation: "fadeSlide 1s ease",
+          margin: "16px",
         }}
       >
         <h2 className="text-center mb-3 fw-bold">Admin Login</h2>
@@ -106,7 +112,7 @@ export function AdminLogin() {
           className="btn btn-primary w-100"
           style={{
             borderRadius: "12px",
-            padding: "14px",
+            padding: "12px 14px",
             background:
               "linear-gradient(135deg, #ff4e50, #f9d423)",
             border: "none",

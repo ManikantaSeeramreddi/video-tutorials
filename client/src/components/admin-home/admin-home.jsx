@@ -16,31 +16,28 @@ export function AdminHome() {
   }, []);
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        background: "#f1f1f1",
-        overflowY: "auto",
-      }}
-    >
+    <div style={{ width: "100%", minHeight: "100vh" }}>
       {/* TOP BAR */}
       <div
         style={{
           width: "100%",
-          height: "70px",
-          background: "white",
+          minHeight: "70px",
+          background: "rgba(255,255,255,0.96)",
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          padding: "0 30px",
+          padding: "12px 16px",
           boxShadow: "0 3px 15px rgba(0,0,0,0.1)",
           position: "sticky",
           top: 0,
           zIndex: 10,
+          gap: "12px",
+          flexWrap: "wrap",
         }}
       >
-        <h2 className="fw-bold m-0">📊 Admin Dashboard</h2>
+        <h2 className="fw-bold m-0" style={{ fontSize: "clamp(1.1rem, 2vw, 1.6rem)" }}>
+          📊 Admin Dashboard
+        </h2>
 
         <Link
           to="/add-video"
@@ -49,6 +46,7 @@ export function AdminHome() {
             padding: "10px 20px",
             borderRadius: "10px",
             fontWeight: "bold",
+            whiteSpace: "nowrap",
           }}
         >
           + Add New Video
@@ -58,90 +56,90 @@ export function AdminHome() {
       {/* MAIN CONTENT */}
       <div
         style={{
-          padding: "30px",
+          padding: "16px",
           maxWidth: "100%",
         }}
       >
         <div
           style={{
-            background: "white",
-            padding: "20px",
+            background: "rgba(255,255,255,0.96)",
+            padding: "14px",
             borderRadius: "15px",
             boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
             animation: "fadeIn 0.6s ease",
             width: "100%",
           }}
         >
-          <table
-            className="table table-hover"
-            style={{ verticalAlign: "middle", width: "100%" }}
-          >
-            <thead className="table-dark">
-              <tr>
-                <th style={{ width: "30%" }}>Title</th>
-                <th style={{ width: "50%" }}>Preview</th>
-                <th style={{ width: "20%" }}>Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {videos.map((video) => (
-                <tr key={video.VideoId} style={{ transition: "0.3s" }}>
-                  <td className="fw-bold">{video.Title}</td>
-
-                  <td>
-                    <div
-                      style={{
-                        position: "relative",
-                        width: "500px",
-                        height: "250px",
-                        overflow: "hidden",
-                        borderRadius: "12px",
-                        boxShadow: "0 3px 10px rgba(0,0,0,0.2)",
-                      }}
-                    >
-                      <iframe
-                        title={`Preview of ${video.Title}`}
-                        src={video.Url}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          border: "none",
-                        }}
-                        allowFullScreen
-                      ></iframe>
-                    </div>
-                  </td>
-
-                  <td>
-                    <Link
-                      to={`/view-video/${video.VideoId}`}
-                      className="btn btn-primary btn-sm me-2"
-                      style={{ borderRadius: "8px" }}
-                    >
-                      <i className="bi bi-eye"></i>
-                    </Link>
-
-                    <Link
-                      to={`/edit-video/${video.VideoId}`}
-                      className="btn btn-warning btn-sm me-2"
-                      style={{ borderRadius: "8px" }}
-                    >
-                      <i className="bi bi-pen-fill"></i>
-                    </Link>
-
-                    <Link
-                      to={`/delete-video/${video.VideoId}`}
-                      className="btn btn-danger btn-sm"
-                      style={{ borderRadius: "8px" }}
-                    >
-                      <i className="bi bi-trash-fill"></i>
-                    </Link>
-                  </td>
+          <div className="table-responsive">
+            <table className="table table-hover align-middle mb-0">
+              <thead className="table-dark">
+                <tr>
+                  <th style={{ minWidth: 200 }}>Title</th>
+                  <th style={{ minWidth: 320 }}>Preview</th>
+                  <th style={{ width: 140 }}>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+
+              <tbody>
+                {videos.map((video) => (
+                  <tr key={video.VideoId} style={{ transition: "0.3s" }}>
+                    <td className="fw-bold">{video.Title}</td>
+
+                    <td>
+                      <div
+                        className="ratio ratio-16x9"
+                        style={{
+                          maxWidth: 520,
+                          borderRadius: 12,
+                          overflow: "hidden",
+                          boxShadow: "0 3px 10px rgba(0,0,0,0.2)",
+                          background: "#000",
+                        }}
+                      >
+                        <iframe
+                          title={`Preview of ${video.Title}`}
+                          src={video.Url}
+                          style={{ border: "none" }}
+                          allowFullScreen
+                        ></iframe>
+                      </div>
+                    </td>
+
+                    <td>
+                      <div className="d-flex gap-2">
+                        <Link
+                          to={`/view-video/${video.VideoId}`}
+                          className="btn btn-primary btn-sm"
+                          style={{ borderRadius: "8px" }}
+                          aria-label="View video"
+                        >
+                          <i className="bi bi-eye"></i>
+                        </Link>
+
+                        <Link
+                          to={`/edit-video/${video.VideoId}`}
+                          className="btn btn-warning btn-sm"
+                          style={{ borderRadius: "8px" }}
+                          aria-label="Edit video"
+                        >
+                          <i className="bi bi-pen-fill"></i>
+                        </Link>
+
+                        <Link
+                          to={`/delete-video/${video.VideoId}`}
+                          className="btn btn-danger btn-sm"
+                          style={{ borderRadius: "8px" }}
+                          aria-label="Delete video"
+                        >
+                          <i className="bi bi-trash-fill"></i>
+                        </Link>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           {videos.length === 0 && (
             <p className="text-center text-muted mt-3">No videos found...</p>

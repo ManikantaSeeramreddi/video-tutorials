@@ -59,7 +59,7 @@ export function Register() {
   return (
     <div
       style={{
-        height: "100vh",
+        minHeight: "100vh",
         width: "100%",
         position: "relative",
         display: "flex",
@@ -89,13 +89,15 @@ export function Register() {
           zIndex: 2,
           display: "flex",
           flexDirection: "column",
-          width: "600px",      // Increased width
-          padding: "35px",     // Increased padding
-          gap: "19px",         // Increased gap
+          width: "100%",
+          maxWidth: "680px",
+          padding: "24px",
+          gap: "14px",
           color: "white",
           background: "rgba(0,0,0,0.5)",
           borderRadius: "20px", // Slightly larger radius
           animation: "fadeSlide 1s ease",
+          margin: "16px",
         }}
       >
         <h2 className="text-center mb-3 fw-bold">Register User</h2>
@@ -176,7 +178,7 @@ export function Register() {
           className="btn btn-primary w-100"
           style={{
             borderRadius: "12px",
-            padding: "14px",
+            padding: "12px 14px",
             background:
               "linear-gradient(135deg, #4e8cff, #7a5cff, #b84fff)",
             border: "none",

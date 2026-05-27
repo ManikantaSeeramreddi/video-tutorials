@@ -72,8 +72,11 @@ export function VideoHome() {
     "All";
 
   return (
-    <div className="container-fluid my-4">
-      <h2 className="text-center mb-4">Videos Home</h2>
+    <div className="container-fluid py-3 py-md-4">
+      <div className="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-2 mb-3">
+        <h2 className="mb-0">Videos</h2>
+        <div className="text-muted">Browse by category</div>
+      </div>
 
       <div className="grid-container">
         {/* Sidebar - Desktop */}
@@ -162,7 +165,7 @@ export function VideoHome() {
       <style>{`
         .grid-container {
           display: grid;
-          grid-template-columns: 2fr 10fr;
+          grid-template-columns: minmax(220px, 260px) 1fr;
           gap: 20px;
         }
 
@@ -174,6 +177,9 @@ export function VideoHome() {
 
         .sidebar {
           padding: 10px;
+          border: 1px solid rgba(255,255,255,0.08);
+          border-radius: 14px;
+          background: rgba(255,255,255,0.04);
         }
 
         .video-card {
@@ -212,6 +218,10 @@ export function VideoHome() {
           );
           color: white;
           border: none;
+        }
+
+        .videos .card-body {
+          background: rgba(255,255,255,0.92);
         }
 
         @keyframes gradientAnimation {

@@ -5,20 +5,44 @@ import { Link, useParams } from "react-router-dom"
 
 export function ViewVideo(){
     const { id } = useParams();
-    const[videos,setVideos]=useState([{VideoId:0,Title:'',Url:'',Likes:'0',Dislikes:'0',Views:'0',CategoryId:'0'}]);
+    const [video, setVideo] = useState(null);
     useEffect(()=>{
         API.get(`/videos/${id}`)
         .then(response=>{
-            setVideos(response.data)
+            setVideo(response.data)
         })
     },[id])
     return(
-        <div>
-            <h2>{videos[0].Title}</h2>
-            <iframe title={`Preview of ${videos[0].Title}`} src={videos[0].Url} width={400} height={400} frameBorder="0"></iframe>
-            <p>
-                <button className="btn btn-secondary"><Link to='/admin-home' className="text-decoration-none text-white">Back to Home</Link></button>
-            </p>
+        <div className="container-fluid py-3 py-md-4">
+            {!video ? (
+              <div className="d-flex justify-content-center py-5">
+                <div className="text-center">
+                  <div className="spinner-border text-primary" role="status" />
+                  <div className="mt-3 text-muted">Loading video…</div>
+                </div>
+              </div>
+            ) : (
+              <>
+                <div className="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-3">
+                  <div>
+                    <h2 className="mb-1">{video.Title}</h2>
+                    <div className="text-muted">Video ID: {video.VideoId}</div>
+                  </div>
+                  <Link to="/admin-home" className="btn btn-outline-light">
+                    ← Back to Dashboard
+                  </Link>
+                </div>
+
+                <div className="ratio ratio-16x9 rounded-4 overflow-hidden shadow-sm bg-dark">
+                  <iframe
+                    title={`Preview of ${video.Title}`}
+                    src={video.Url}
+                    style={{ border: "none" }}
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              </>
+            )}
         </div>
     )
 }
