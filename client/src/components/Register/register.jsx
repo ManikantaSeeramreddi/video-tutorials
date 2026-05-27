@@ -1,4 +1,4 @@
-import axios from "axios";
+import API from "../../api";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -19,8 +19,7 @@ export function Register() {
     const value = e.target.value;
     setUser({ ...user, UserId: value });
 
-    axios
-      .get("http://127.0.0.1:5000/users")
+    API.get("/users")
       .then((response) => {
         const exists = response.data.some((u) => String(u.UserId) === value);
         setUserError(exists ? "UserId already taken. Try another." : "UserId available.");
@@ -45,7 +44,7 @@ export function Register() {
     }
 
     try {
-      await axios.post("http://127.0.0.1:5000/registeruser", user, {
+      await API.post("/registeruser", user, {
         headers: { "Content-Type": "application/json" },
       });
       alert("Registered Successfully!");

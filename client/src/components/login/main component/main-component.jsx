@@ -1,4 +1,4 @@
-import axios from "axios";
+import API from "../../../api";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -12,7 +12,7 @@ export function Maincomponent() {
     }
 
     function Getstarted() {
-        axios.get("http://127.0.0.1:5000/users")
+        API.get("/users")
             .then((response) => {
                 const users = response.data;
                 const userFound = users.some(user => user.Email === email);

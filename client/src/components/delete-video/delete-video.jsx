@@ -1,5 +1,5 @@
 
-import axios from "axios";
+import API from "../../api";
 import { useEffect, useState } from "react";
 import { Link,  useNavigate, useParams } from "react-router-dom";
 
@@ -9,19 +9,13 @@ export function DeleteVideo(){
     const navigate=useNavigate();
     const[videos,setVideos]=useState([{VideoId:0,Title:'',Url:'',Likes:'0',Dislikes:'0',Views:'0',CategoryId:'0'}]);
     useEffect(()=>{
-        axios({
-            method:'get',
-          url:`http://127.0.0.1:5000/videos/${id}`
-        })
+        API.get(`/videos/${id}`)
         .then((response)=>{
             setVideos(response.data)
         })
     },[id]);
     async function handleDeleteClick(){
-        await axios({
-            method:'delete',
-            url:`http://127.0.0.1:5000/deletevideo/${id}`
-        })
+        await API.delete(`/deletevideo/${id}`)
         alert('video deleted')
         navigate('/admin-home')
     }

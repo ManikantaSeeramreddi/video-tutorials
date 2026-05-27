@@ -1,4 +1,4 @@
-import axios from "axios";
+import API from "../../api";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -6,7 +6,7 @@ export function AdminHome() {
   const [videos, setVideos] = useState([]);
 
   function LoadVideos() {
-    axios.get("http://127.0.0.1:5000/videos").then((response) => {
+    API.get("/videos").then((response) => {
       setVideos(response.data);
     });
   }

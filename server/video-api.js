@@ -8,6 +8,12 @@ const port = process.env.PORT || 5000;
 const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017';
 const dbName = process.env.DB_NAME || 'reactdb';
 
+// Log startup configuration
+console.log('=== SERVER STARTUP ===');
+console.log('PORT:', port);
+console.log('DB_NAME:', dbName);
+console.log('MONGODB_URI:', mongoUri.substring(0, 50) + '...');
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -17,8 +23,15 @@ let database;
 
 async function connectDatabase() {
   if (!database) {
-    await client.connect();
-    database = client.db(dbName);
+    try {
+      console.log('Connecting to MongoDB...');
+      await client.connect();
+      database = client.db(dbName);
+      console.log('✓ MongoDB connected successfully');
+    } catch (error) {
+      console.error('✗ MongoDB connection failed:', error.message);
+      throw error;
+    }
   }
   return database;
 }
@@ -224,7 +237,8 @@ app.delete('/deletevideo/:id', async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`server started: http://127.0.0.1:${port}`);
+  console.log(`✓ Server started: http://127.0.0.1:${port}`);
+  console.log('===================');
 });
 
 process.on('SIGINT', async () => {

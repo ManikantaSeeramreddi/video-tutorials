@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import API from "../../api";
 import { Dropdown, DropdownButton } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -13,8 +13,8 @@ export function VideoHome() {
     async function loadData() {
       try {
         const [videosRes, categoriesRes] = await Promise.all([
-          axios.get("http://127.0.0.1:5000/videos"),
-          axios.get("http://127.0.0.1:5000/categories"),
+          API.get("/videos"),
+          API.get("/categories"),
         ]);
 
         const videoData = Array.isArray(videosRes.data) ? videosRes.data : [];

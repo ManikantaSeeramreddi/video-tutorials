@@ -1,4 +1,4 @@
-import axios from "axios";
+import API from "../../api";
 import { useFormik } from "formik";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -9,8 +9,7 @@ export function EditVideo() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios
-      .get(`http://127.0.0.1:5000/videos/${id}`)
+    API.get(`/videos/${id}`)
       .then((res) => {
         let v = res.data;
         if (Array.isArray(v)) v = v[0];
@@ -38,8 +37,7 @@ export function EditVideo() {
     },
     enableReinitialize: true,
     onSubmit: (values) => {
-      axios
-        .put(`http://127.0.0.1:5000/updatevideo/${id}`, values)
+      API.put(`/updatevideo/${id}`, values)
         .then(() => {
           alert("Video Updated Successfully!");
           navigate("/admin-home");

@@ -1,4 +1,4 @@
-import axios from "axios";
+import API from "../../api";
 import { useFormik } from "formik";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
@@ -19,8 +19,7 @@ export function AddVideo() {
       Views: 0,
     },
     onSubmit: (values) => {
-      axios
-        .post("http://127.0.0.1:5000/addvideo", values)
+      API.post("/addvideo", values)
         .then(() => alert("Video Added Successfully!"))
         .catch((err) => console.error(err));
     },

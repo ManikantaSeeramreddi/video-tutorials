@@ -1,4 +1,4 @@
-import axios from "axios";
+import API from "../../api";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -18,10 +18,7 @@ export function AdminLogin() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    axios({
-      method: "get",
-      url: "http://127.0.0.1:5000/admin",
-    }).then((response) => {
+    API.get("/admin").then((response) => {
       const found = response.data.some(
         (vuser) =>
           vuser.UserId === user.UserId && vuser.Password === user.Password

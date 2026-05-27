@@ -1,4 +1,4 @@
-import axios from "axios";
+import API from "../../api";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -17,10 +17,7 @@ export function Login() {
 
   function handleSubmit(e) {
     e.preventDefault();
-    axios({
-      method: "get",
-      url: "http://127.0.0.1:5000/users",
-    }).then((response) => {
+    API.get("/users").then((response) => {
       let found = false;
       for (var vuser of response.data) {
         if (vuser.UserId === user.UserId && vuser.Password === user.Password) {
