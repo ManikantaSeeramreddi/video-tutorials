@@ -42,12 +42,35 @@ async function getCollection(name) {
 }
 
 function sendError(res, error) {
-  console.error(error);
+  console.error('❌ API Error:', {
+    message: error.message,
+    code: error.code,
+    name: error.name,
+    stack: error.stack?.split('\n').slice(0, 3).join('\n')
+  });
   res.status(500).json({ error: error.message || 'Internal server error' });
 }
 
 app.get('/', (req, res) => {
   res.json({ status: 'ok', message: 'Video API is running' });
+});
+
+app.get('/health', async (req, res) => {
+  try {
+    const db = await connectDatabase();
+    const adminCommand = await db.admin().ping();
+    res.json({ 
+      status: 'healthy',
+      mongodb: 'connected',
+      ping: adminCommand
+    });
+  } catch (error) {
+    res.status(500).json({ 
+      status: 'unhealthy',
+      mongodb: 'disconnected',
+      error: error.message 
+    });
+  }
 });
 
 app.get('/admin', async (req, res) => {
