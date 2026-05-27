@@ -18,7 +18,20 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-const client = new MongoClient(mongoUri);
+// Request timeout middleware - 10 seconds
+app.use((req, res, next) => {
+  res.setTimeout(10000, () => {
+    console.error('⏱️ Request timeout:', req.path);
+    res.status(408).json({ error: 'Request timeout' });
+  });
+  next();
+});
+
+const client = new MongoClient(mongoUri, {
+  serverSelectionTimeoutMS: 5000,
+  socketTimeoutMS: 5000,
+  connectTimeoutMS: 5000,
+});
 let database;
 
 async function connectDatabase() {
@@ -37,8 +50,13 @@ async function connectDatabase() {
 }
 
 async function getCollection(name) {
-  const db = await connectDatabase();
-  return db.collection(name);
+  try {
+    const db = await connectDatabase();
+    return db.collection(name);
+  } catch (error) {
+    console.error(`✗ Failed to get collection '${name}':`, error.message);
+    throw error;
+  }
 }
 
 function sendError(res, error) {
