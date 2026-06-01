@@ -1,50 +1,74 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /* App-wide layout + responsive defaults */
 
 :root {
-  --app-bg: #0b1220;
-  --app-surface: rgba(255, 255, 255, 0.06);
-  --app-border: rgba(255, 255, 255, 0.12);
-  --app-text: #e8eefc;
-  --app-muted: rgba(232, 238, 252, 0.72);
+  --app-bg: #0f172a;
+  --app-surface: rgba(30, 41, 59, 0.8);
+  --app-border: rgba(148, 163, 184, 0.12);
+  --app-text: #f1f5f9;
+  --app-muted: rgba(241, 245, 249, 0.64);
 }
 
 .app-shell {
-  min-height: 100vh;
-  background: radial-gradient(1200px 800px at 10% 0%, rgba(91, 108, 255, 0.15), transparent 50%),
-    radial-gradient(900px 700px at 90% 10%, rgba(255, 120, 90, 0.12), transparent 55%),
-    var(--app-bg);
+  @apply min-h-screen bg-gradient-to-br from-slate-950 via-blue-950 to-slate-900;
+  background-image: 
+    radial-gradient(1200px 800px at 10% 0%, rgba(59, 130, 246, 0.15), transparent 50%),
+    radial-gradient(900px 700px at 90% 10%, rgba(168, 85, 247, 0.1), transparent 55%),
+    linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   color: var(--app-text);
 }
 
 .app-main {
-  min-height: calc(100vh - 56px);
-  padding: 16px;
-  padding-bottom: 32px;
-  overflow-x: hidden;
-}
-
-@media (min-width: 768px) {
-  .app-main {
-    padding: 24px;
-  }
+  @apply min-h-screen px-4 pb-8 overflow-x-hidden md:px-6 lg:px-8;
 }
 
 /* Better tap targets on mobile */
 button,
 .btn {
-  min-height: 40px;
+  @apply min-h-[40px] transition-all duration-300;
 }
 
 /* Prevent iframe overflow on small screens */
 iframe {
-  max-width: 100%;
+  @apply w-full max-w-full;
 }
 
 /* Smoother scrolling + iOS momentum */
 html {
   scroll-behavior: smooth;
 }
+
 body {
-  overflow-x: hidden;
+  @apply overflow-x-hidden bg-slate-950 text-slate-50;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Glassmorphism effect */
+.glass-effect {
+  @apply backdrop-blur-md bg-white/10 border border-white/20 rounded-lg;
+}
+
+.glass-effect-dark {
+  @apply backdrop-blur-md bg-slate-900/40 border border-slate-700/30 rounded-lg;
+}
+
+/* Card hover animations */
+.card-hover {
+  @apply transition-all duration-300 hover:scale-105 hover:shadow-lg;
+}
+
+/* Button hover glow */
+.btn-glow {
+  @apply relative transition-all duration-300 hover:shadow-lg hover:shadow-accent-500/50;
+}
+
+/* Skeleton loading animation */
+.skeleton {
+  @apply animate-shimmer bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700;
+  background-size: 1000px 100%;
 }
