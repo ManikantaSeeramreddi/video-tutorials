@@ -224,6 +224,15 @@ export function Maincomponent() {
                     />
                 </div>
             </motion.div>
+
+            <div className="absolute bottom-4 right-4 z-10">
+                <a
+                    href="/admin-login"
+                    className="inline-flex items-center rounded-full border border-blue-500/40 bg-blue-500/10 px-4 py-2 text-sm font-medium text-blue-300 transition hover:bg-blue-500/20 hover:text-white"
+                >
+                    Admin Login
+                </a>
+            </div>
         </section>
     );
 }
